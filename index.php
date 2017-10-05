@@ -1,11 +1,16 @@
+
 <?php
-    require_once('database.php');
-    //GEt name for current category
-    $query = "SELECT firstName, lastName FROM customers order by lastName;";
-    //result set
-    $customers = $db->query($query);
-    // Get category ID
-    
+require_once('database.php');
+
+ $state='CA';
+ $query = "SELECT firstName, lastName, city FROM customers WHERE state = ? ORDER BY lastName";
+
+ $stmt = $db->prepare($query);
+ $stmt->bind_param('s', $state);
+ $stmt->execute();
+$stmt->store_result();
+ $stmt->bind_result($firstName, $lastName, $city);
+
 ?>
 
 <!DOCTYPE html>
@@ -13,7 +18,7 @@
 
 <!-- the head section -->
 <head>
-    <title>My Guitar Shop</title>
+    <title>Midterm</title>
     <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 
@@ -22,35 +27,49 @@
     <div id="page">
 
     <div id="header">
-        <h1>Customer Relations</h1>
+        <h1>Customer list</h1>
     </div>
 
     <div id="main">
 
         <h1>Customer List</h1>
 
-        
+       
+
         <div id="content">
-            <!-- display a list of customers -->
+            <!-- display a table of products -->
             <table>
                 <tr>
                     <th>First Name</th>
                     <th>Last Name</th>
+                    <th>City</th>
+
                 </tr>
-                <?php foreach ($customers as $customer) : ?>
+                <?php while($stmt->fetch()): ?>
+
                 <tr>
-                    <td><?php echo $customer['firstName']; ?></td>
-                    <td><?php echo $customer['lastName']; ?></td>
+                    <td><?php  echo $firstName; ?></td>
+                    <td><?php  echo $lastName; ?></td>
+                    <td><?php echo $city; ?></td>
+
+                    
+                    
                 </tr>
-                <?php endforeach; ?>
+                
+                <?php endwhile; ?>
             </table>
         </div>
     </div>
 
     <div id="footer">
-        <p>&copy; <?php echo date("Y"); ?> Columbus State University.</p>
+        <p>&copy; <?php echo date("Y"); ?> midterm, Inc.</p>
     </div>
 
     </div><!-- end page -->
 </body>
 </html>
+
+<?php
+  $stmt->free_result();
+  $db->close();
+ ?>
